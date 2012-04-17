@@ -1,0 +1,6 @@
+TARGETNAME=TraceDetour
+TARGETTYPE=DRIVER
+TARGETPATH=OBJ
+TARGETLIBS=$(SDK_LIB_PATH)\ntoskrnl.lib
+INCLUDES=..\inc
+SOURCES=driver.c irql.c modwp.c ntsetvaluekey.c
