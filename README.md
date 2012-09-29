@@ -1,0 +1,1 @@
+This project uses inline hook to modify the behavior of system routines.

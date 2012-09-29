@@ -1,0 +1,91 @@
+;
+; TraceDetour.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=TraceDetour.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+TraceDetour.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%TraceDetour.DeviceDesc%=TraceDetour_Device, Root\TraceDetour ; TODO: edit hw-id
+
+[TraceDetour_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+TraceDetour.sys
+
+;-------------- Service installation
+[TraceDetour_Device.NT.Services]
+AddService = TraceDetour,%SPSVCINST_ASSOCSERVICE%, TraceDetour_Service_Inst
+
+; -------------- TraceDetour driver install sections
+[TraceDetour_Service_Inst]
+DisplayName    = %TraceDetour.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\TraceDetour.sys
+LoadOrderGroup = Extended Base
+
+;
+;--- TraceDetour_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+TraceDetour_Device_CoInstaller_CopyFiles = 11
+
+[TraceDetour_Device.NT.CoInstallers]
+AddReg=TraceDetour_Device_CoInstaller_AddReg
+CopyFiles=TraceDetour_Device_CoInstaller_CopyFiles
+
+[TraceDetour_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[TraceDetour_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[SourceDisksFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+[TraceDetour_Device.NT.Wdf]
+KmdfService =  TraceDetour, TraceDetour_wdfsect
+[TraceDetour_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="" ; TODO: add ManufacturerName
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "TraceDetour Installation Disk"
+TraceDetour.DeviceDesc = "TraceDetour Device"
+TraceDetour.SVCDESC = "TraceDetour Service"
